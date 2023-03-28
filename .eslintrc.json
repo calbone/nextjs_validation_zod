@@ -7,6 +7,16 @@
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
-    "@typescript-eslint/consistent-type-imports": "error"
+    "@typescript-eslint/consistent-type-imports": "error",
+    "react/jsx-boolean-value": "error",
+    "react/jsx-curly-brace-presence": "error",
+    "react/self-closing-comp": [
+      "error",
+      {
+        "component": true,
+        "html": true
+      }
+    ],
+    "arrow-body-style": ["error", "as-needed"]
   }
 }
