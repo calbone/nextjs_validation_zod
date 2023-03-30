@@ -1,9 +1,15 @@
 import {
   Button,
+  ButtonGroup,
+  Container,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
+  Heading,
   Input,
+  Select,
+  VStack,
 } from '@chakra-ui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { SubmitHandler } from 'react-hook-form'
@@ -36,17 +42,39 @@ export default function HookForm() {
     })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!!errors.name}>
-        <FormLabel htmlFor="name">First name</FormLabel>
-        <Input id="name" placeholder="name" {...register('name')} />
-        <FormErrorMessage>
-          {errors.name && errors.name.message}
-        </FormErrorMessage>
-      </FormControl>
-      <Button mt={4} colorScheme="teal" isLoading={isSubmitting} type="submit">
-        Submit
-      </Button>
-    </form>
+    <Container maxW="container.sm">
+      <Heading as="h1" mb="24px">
+        RHF + Zod Form
+      </Heading>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <VStack spacing="16px">
+          <FormControl isInvalid={!!errors.name}>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input id="name" placeholder="name" {...register('name')} />
+            <FormErrorMessage>
+              {errors.name && errors.name.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Email address</FormLabel>
+            <Input type="email" />
+            <FormHelperText>We&lsquo;ll never share your email.</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Country</FormLabel>
+            <Select placeholder="Select country">
+              <option>United Arab Emirates</option>
+              <option>Nigeria</option>
+            </Select>
+          </FormControl>
+        </VStack>
+        <ButtonGroup spacing="8" mt={4}>
+          <Button colorScheme="teal" isLoading={isSubmitting} type="submit">
+            Submit
+          </Button>
+          <Button variant="outline">Cancel</Button>
+        </ButtonGroup>
+      </form>
+    </Container>
   )
 }
