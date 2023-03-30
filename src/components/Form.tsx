@@ -5,36 +5,41 @@ import {
   FormLabel,
   Input,
 } from '@chakra-ui/react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { SubmitHandler } from 'react-hook-form'
 import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+
+const Schema = z.object({
+  name: z.string().nonempty({ message: 'This is required' }).min(4, {
+    message: 'Minimum length should be 4',
+  }),
+})
+
+type NameType = z.infer<typeof Schema>
 
 export default function HookForm() {
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm()
+  } = useForm<NameType>({
+    resolver: zodResolver(Schema),
+  })
 
-  function onSubmit(values) {
-    return new Promise((resolve) => {
+  const onSubmit: SubmitHandler<NameType> = (values) =>
+    new Promise((resolve: any) => {
       setTimeout(() => {
         alert(JSON.stringify(values, null, 2))
         resolve()
       }, 3000)
     })
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={errors.name}>
+      <FormControl isInvalid={!!errors.name}>
         <FormLabel htmlFor="name">First name</FormLabel>
-        <Input
-          id="name"
-          placeholder="name"
-          {...register('name', {
-            required: 'This is required',
-            minLength: { value: 4, message: 'Minimum length should be 4' },
-          })}
-        />
+        <Input id="name" placeholder="name" {...register('name')} />
         <FormErrorMessage>
           {errors.name && errors.name.message}
         </FormErrorMessage>
