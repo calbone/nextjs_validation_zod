@@ -17,9 +17,17 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 const Schema = z.object({
-  name: z.string().nonempty({ message: 'This is required' }).min(4, {
-    message: 'Minimum length should be 4',
+  name: z.string().nonempty({ message: '必須項目です。' }).min(4, {
+    message: '4文字以上入力してください。',
   }),
+  email: z
+    .string()
+    .nonempty({ message: 'メールアドレスを入力してください。' })
+    .email({ message: '入力形式がメールアドレスではありません。' }),
+  country: z
+    .string()
+    .transform((value) => parseInt(value, 10))
+    .refine((value) => !!value, { message: '１つの国を選択してください。' }),
 })
 
 type NameType = z.infer<typeof Schema>
@@ -41,6 +49,11 @@ export default function HookForm() {
       }, 3000)
     })
 
+  const contries = [
+    { value: '1', name: 'United Arab Emirates' },
+    { value: '2', name: 'Nigeria' },
+  ]
+
   return (
     <Container maxW="container.sm">
       <Heading as="h1" mb="24px">
@@ -55,24 +68,42 @@ export default function HookForm() {
               {errors.name && errors.name.message}
             </FormErrorMessage>
           </FormControl>
-          <FormControl>
-            <FormLabel>Email address</FormLabel>
-            <Input type="email" />
+          <FormControl isInvalid={!!errors.email}>
+            <FormLabel htmlFor="email">Email address</FormLabel>
+            <Input
+              id="email"
+              placeholder="email"
+              type="email"
+              {...register('email')}
+            />
+            <FormErrorMessage>
+              {errors.email && errors.email.message}
+            </FormErrorMessage>
             <FormHelperText>We&lsquo;ll never share your email.</FormHelperText>
           </FormControl>
-          <FormControl>
-            <FormLabel>Country</FormLabel>
-            <Select placeholder="Select country">
-              <option>United Arab Emirates</option>
-              <option>Nigeria</option>
+          <FormControl isInvalid={!!errors.country}>
+            <FormLabel htmlFor="country">Country</FormLabel>
+            <Select
+              id="country"
+              placeholder="Select country"
+              {...register('country')}
+            >
+              {contries.map((country, index) => (
+                <option key={index} value={country.value}>
+                  {country.name}
+                </option>
+              ))}
             </Select>
+            <FormErrorMessage>
+              {errors.country && errors.country?.message}
+            </FormErrorMessage>
           </FormControl>
         </VStack>
-        <ButtonGroup spacing="8" mt={4}>
+        <ButtonGroup spacing="6" mt={4}>
+          <Button variant="outline">Reset</Button>
           <Button colorScheme="teal" isLoading={isSubmitting} type="submit">
             Submit
           </Button>
-          <Button variant="outline">Cancel</Button>
         </ButtonGroup>
       </form>
     </Container>
