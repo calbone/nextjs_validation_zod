@@ -1,5 +1,9 @@
-import HookForm from '@/components/Form'
+import From from '@/components/Form'
 
 export default function Home() {
-  return <HookForm />
+  return (
+    <>
+      <From />
+    </>
+  )
 }
