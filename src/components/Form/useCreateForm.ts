@@ -1,7 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/router'
 import type { SubmitHandler } from 'react-hook-form'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
 import * as z from 'zod'
+
+import type { User } from '@/states/userState'
+import { userState } from '@/states/userState'
 
 const Schema = z.object({
   name: z.string().nonempty({ message: '必須項目です。' }).min(4, {
@@ -15,16 +20,19 @@ const Schema = z.object({
     .string()
     .transform((value) => parseInt(value, 10))
     .refine((value) => !!value, { message: '１つの国を選択してください。' }),
+  memberStatus: z.optional(
+    z.enum(['gold', 'silver', 'bronze'], {
+      errorMap: () => ({ message: '選択してください。' }),
+    })
+  ),
 })
 
-type Forms = z.infer<typeof Schema>
+export type Forms = z.infer<typeof Schema>
 
 export const useCreateForm = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, isSubmitting },
-  } = useForm<Forms>({
+  const user = useRecoilValue<User>(userState)
+  const router = useRouter()
+  const method = useForm<Forms>({
     resolver: zodResolver(Schema),
   })
 
@@ -33,14 +41,19 @@ export const useCreateForm = () => {
       setTimeout(() => {
         alert(JSON.stringify(values, null, 2))
         resolve()
+        router.push({ query: 'step=confirm' })
       }, 3000)
     })
 
+  const onConfirm: SubmitHandler<Forms> = () => {
+    router.push({ query: 'step=confirm' })
+  }
+
   return {
-    handleSubmit,
-    register,
-    errors,
-    isSubmitting,
+    user,
+    FormProvider,
+    method,
     onSubmit,
+    onConfirm,
   }
 }
