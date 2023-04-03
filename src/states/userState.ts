@@ -15,6 +15,6 @@ export const userState = atom<User>({
     id: 1,
     name: '平野紫耀',
     email: 'sho@gmail.com',
-    memberStatus: 'none',
+    memberStatus: 'gold',
   },
 })
